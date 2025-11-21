@@ -1,0 +1,6 @@
+Quick workflow summary
+git status            # see what changed
+git add .             # stage all changes
+git commit -m "msg"   # commit changes
+git pull origin main  # update local main (avoid conflicts)
+git push origin main  # push changes to remote
