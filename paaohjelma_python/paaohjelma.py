@@ -1,6 +1,7 @@
 import mysql.connector
 import random
 import Visuals
+
 from geopy.distance import geodesic
 
 
