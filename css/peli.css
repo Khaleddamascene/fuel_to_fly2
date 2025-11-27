@@ -1,0 +1,33 @@
+#central_div_peli_sivu{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+.ajankohtainen_tieto{
+    border: 2px solid #1935CA;
+    border-radius: 13px;
+    padding: 10px;
+
+    width: 95%;
+}
+
+.ajankohtainen_tieto_1_inner{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.icon{
+    width: 34px;
+    height: auto;
+}
+
+.ajankohtainen_tieto_1_inner p{
+    width: 182px;
+    font-size: 18px;
+    font-weight: normal;
+    color: #000000;
+}
+#current_airport, #fuel_left{
+    font-weight: bold;
+}

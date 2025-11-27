@@ -5,6 +5,12 @@ html, body {
     box-sizing: border-box;
     font-family: 'Poppins', bold;
 }
+p, a, h1, h2, h3, h4, h5, h6, button {
+    font-family: 'Poppins', bold;
+}
+th, td{
+    font-family: 'Poppins', light;
+}
 
 .logo_div {
     text-align: left;
