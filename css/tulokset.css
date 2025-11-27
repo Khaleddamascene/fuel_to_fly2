@@ -1,6 +1,6 @@
 
 .Tulokset_otsikko {
-    height: 10vh;
+    height: 5vh;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -9,29 +9,47 @@
 }
 
 .Tulokset_Taulu {
-    height: 75vh;
-    background: red;
-    width: 100%;
+    height: 59vh;
+    /* background: red; */
+    width: screen-width;
     display: flex;
+    gap: 70px;
+    padding: 50px;
 }
 
+/* Kaksai taulu (eniten kenttiä ja isoin matka) */
+
 .Eniten_kenttiä {
-    background: blue;
+    border: solid #1935CA 2px;
+    border-radius: 3.44px;
     width: 100%;
     height: 100%;
 }
 
 .Isoin_matka {
-    background: green;
+    border: solid #1935CA 2px;
+    border-radius: 3.44px;
+
     width: 100%;
     height: 100%;
 }
 
+/*  Sivuston Nappi */
 .central_div_tulos_Button {
     display: flex;
-
     align-items: center;
     flex-direction: column;
     width: 100%;
     margin-top: 10px;
+}
+
+
+/* Taulukon siällä oleva content */
+
+.pokaali{
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
 }
