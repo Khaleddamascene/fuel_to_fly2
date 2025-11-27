@@ -4,3 +4,18 @@ git add .             # stage all changes
 git commit -m "msg"   # commit changes
 git pull origin main  # update local main (avoid conflicts)
 git push origin main  # push changes to remote
+
+
+
+__________________________________________________
+
+
+   #     host='127.0.0.1',
+    #     port=3306,
+    #     database='fuel_to_fly',
+    #     user='Dornaraj',
+    #     password='123',
+    #     autocommit=True
+
+
+
