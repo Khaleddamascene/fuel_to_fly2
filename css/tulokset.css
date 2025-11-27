@@ -1,0 +1,37 @@
+
+.Tulokset_otsikko {
+    height: 10vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.Tulokset_Taulu {
+    height: 75vh;
+    background: red;
+    width: 100%;
+    display: flex;
+}
+
+.Eniten_kenttiä {
+    background: blue;
+    width: 100%;
+    height: 100%;
+}
+
+.Isoin_matka {
+    background: green;
+    width: 100%;
+    height: 100%;
+}
+
+.central_div_tulos_Button {
+    display: flex;
+
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+}
