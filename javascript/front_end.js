@@ -4,3 +4,61 @@ const map = L.map('karta_tieto_div').setView([60.1699, 24.9384], 12); // Tähän
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(map);
+
+// Tämä Function hakee tulokset Flask-palvelimelta ja päivittää HTML-taulukot
+
+async function HaeTuloksetFun() {
+    try {
+        const response = await fetch('http://localhost:5000/api/tulokset');
+        const results = await response.json();
+        
+        // Haetaan top 10 pelaajaa eniten kenttiä vierailtu ja pisin matka
+        const EnitenKenttiä = [...results].sort((a, b) => 
+            b.visited_count - a.visited_count || b.total_distance - a.total_distance
+        ).slice(0, 10);
+        
+        // Haetaan top 10 pelaajaa pisin matka ja eniten kenttiä vierailtu
+        const IsoinMatka = [...results].sort((a, b) => 
+            b.total_distance - a.total_distance || b.visited_count - a.visited_count
+        ).slice(0, 10);
+        
+        // Päivitetään HTML-taulukot
+        const EnitenKenttiäBody = document.getElementById('Eniten_kenttiä-body');
+        EnitenKenttiäBody.innerHTML = ''; 
+
+        EnitenKenttiä.forEach(result => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${result.player_name}</td>
+                <td>${result.visited_count}</td>
+                <td>${parseFloat(result.total_distance).toFixed(2)} km</td>
+            `;
+            EnitenKenttiäBody.appendChild(row);
+        });
+        
+        const IsoinMatkaBody = document.getElementById('Isoin_matka-body');
+        IsoinMatkaBody.innerHTML = ''; 
+        
+        IsoinMatka.forEach(result => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${result.player_name}</td>
+                <td>${result.visited_count}</td>
+                <td>${parseFloat(result.total_distance).toFixed(2)} km</td>
+            `;
+            IsoinMatkaBody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        document.getElementById('Eniten_kenttiä-body').innerHTML = 
+            '<tr><td colspan="3">Error loading results. Varmista, että Flask-palvelin on käynnissä..</td></tr>';
+        document.getElementById('Isoin_matka-body').innerHTML = 
+            '<tr><td colspan="3">Error loading results. Varmista, että Flask-palvelin on käynnissä..</td></tr>';
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', HaeTuloksetFun);
+
+// _____HaeTuloksetFun function Loppu _________________________________

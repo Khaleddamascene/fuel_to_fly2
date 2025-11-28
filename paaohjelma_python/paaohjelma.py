@@ -1,9 +1,15 @@
 import mysql.connector
 import random
 import Visuals
+from flask import Flask, jsonify, send_from_directory
+
+# Asenna flask-cors, jos ei ole asennettuna: pip install flask-cors
+from flask_cors import CORS 
 
 from geopy.distance import geodesic
 
+app = Flask(__name__)
+CORS(app)
 
 # --- TIETOKANTAYHTEYS ---
 def get_connection():
@@ -15,6 +21,26 @@ def get_connection():
         password='123',
         autocommit=True
     )
+
+# --- FLASK REITTI TULOSTEN HAKEMISEKSI ---
+
+# 'Tulokset-sivustolle' Route
+@app.route("/api/tulokset")
+def hae_tulokset():
+    yhteys = get_connection()
+    cursor = yhteys.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM results")
+    tulokset = cursor.fetchall()
+    cursor.close()
+    yhteys.close()
+    
+    return jsonify(tulokset)
+
+@app.route("/")
+def home():
+    return send_from_directory('.', 'tulokset.html')
+# ----------------------Tulokset-sivustolle Route Loppu --
+ 
 
 
 # --- KOMENNOT ---
@@ -153,6 +179,9 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
 # --- MAIN ---
 if __name__ == "__main__":
+    # !!(kommentoi alla oleva jos haluat käynnistää TERMINAL PELIN Fuel_to_fly1 "app.run(debug=True) tai 'Ctrl C' lopettaa palvelimen)!!")
+    app.run(debug=True)
+    
     Visuals.logo
     peliJatkuu = True
     while (peliJatkuu):
