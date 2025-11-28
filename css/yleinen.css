@@ -3,13 +3,16 @@ html, body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', bold;
+    font-family: 'Poppins';
+    font-weight: bold;
 }
 p, a, h1, h2, h3, h4, h5, h6, button {
-    font-family: 'Poppins', bold;
+    font-family: 'Poppins';
+    font-weight: bold;
 }
 th, td{
-    font-family: 'Poppins', light;
+    font-family: 'Poppins';
+    font-weight: normal;
 }
 
 .logo_div {
@@ -51,7 +54,7 @@ th, td{
     font-size: 18px;
     border: none;
     font-weight: bold;
-    border-radius: 3.44px;
+    border-radius: 5px;
     background-color: #1935CA;
     color: white;
     cursor: pointer;

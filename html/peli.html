@@ -6,6 +6,12 @@
     <link rel="stylesheet" href="../css/yleinen.css">
     <link rel="stylesheet" href="../css/peli.css">
     <script src="../javascript/front_end.js" defer></script>
+
+
+    <!-- Leaflet CSS Karta -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <!-- Leaflet JS Karta -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <title>Fuel To Fly</title>
 </head>
 <body>
@@ -17,7 +23,8 @@
 
 <div class="central_div" id="central_div_peli_sivu">
 
-    <div class="ajankohtainen_tieto">
+    <div class="ajankohtainen_tieto" id="ajankohtainen_tieto_ylin">
+
         <div id="texti_tieto_div">
             <div class="ajankohtainen_tieto_1_inner">
                 <img class="icon" id="nykyijen_kenta_icon" src="../assets/nykyijen_kenta_icon.svg" alt="">
@@ -30,15 +37,130 @@
                 <p id="fuel_left">1000 yksikköä</p>
             </div> 
         </div>
-        <div id="karta_tieto_div">
-            // karta
-        </div>
+
+        <div id="karta_tieto_div"></div>
+
     </div>
 
-    <div class="ajankohtainen_tieto">
-        <div></div>
-        <div></div>
-        <div></div>
+    <div class="ajankohtainen_tieto" id="ajankohtainen_tieto_alin">
+
+        <!--ajankohtainen_tieto_2_inner LOHKO 1-->
+        <div class="ajankohtainen_tieto_2_inner">
+
+            <div class="a2_inner_content_1">
+                <img class="valikko_icon" src="../assets/nykyijen_kenta_icon.svg" alt="">
+                <p id="municipality">municipality</p>
+                <p id="ident">ICAO</p>
+            </div>
+
+            <div class="a2_inner_content_2">
+                <p id="name">airport name</p>
+            </div>
+
+            <div class="a2_inner_content_3">
+                <div class="a2_inner_content_3_main">
+                    <div class="a2_inner_content_3_img">
+                        <img src="../assets/peli_maa.svg" alt="">
+                    </div>
+                    <div class="a2_inner_content_3_info">
+                        <p>Maa</p>
+                        <p id="country">country name</p>
+                    </div>
+                </div>
+                <div class="a2_inner_content_3_main">
+                    <div class="a2_inner_content_3_img">
+                        <img src="../assets/peli_maanosa.svg" alt="">
+                    </div>
+                    <div class="a2_inner_content_3_info">
+                        <p>Maanosa</p>
+                        <p id="continent">continent name</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="a2_inner_content_4">
+                <button class="a2_inner_content_4_button" id="valitse_lentokenta_1">Lennä tänne →</button>
+            </div> 
+        </div>
+
+        <!--ajankohtainen_tieto_2_inner LOHKO 2-->
+        <div class="ajankohtainen_tieto_2_inner">
+
+            <div class="a2_inner_content_1">
+                <img class="valikko_icon" src="../assets/nykyijen_kenta_icon.svg" alt="">
+                <p id="municipality">municipality</p>
+                <p id="ident">ICAO</p>
+            </div>
+
+            <div class="a2_inner_content_2">
+                <p id="name">airport name</p>
+            </div>
+
+            <div class="a2_inner_content_3">
+                <div class="a2_inner_content_3_main">
+                    <div class="a2_inner_content_3_img">
+                        <img src="../assets/peli_maa.svg" alt="">
+                    </div>
+                    <div class="a2_inner_content_3_info">
+                        <p>Maa</p>
+                        <p id="country">country name</p>
+                    </div>
+                </div>
+                <div class="a2_inner_content_3_main">
+                    <div class="a2_inner_content_3_img">
+                        <img src="../assets/peli_maanosa.svg" alt="">
+                    </div>
+                    <div class="a2_inner_content_3_info">
+                        <p>Maanosa</p>
+                        <p id="continent">continent name</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="a2_inner_content_4">
+                <button class="a2_inner_content_4_button" id="valitse_lentokenta_2">Lennä tänne →</button>
+            </div> 
+        </div>
+
+        <!--ajankohtainen_tieto_2_inner LOHKO 3-->
+        <div class="ajankohtainen_tieto_2_inner">
+
+            <div class="a2_inner_content_1">
+                <img class="valikko_icon" src="../assets/nykyijen_kenta_icon.svg" alt="">
+                <p id="municipality">municipality</p>
+                <p id="ident">ICAO</p>
+            </div>
+
+            <div class="a2_inner_content_2">
+                <p id="name">airport name</p>
+            </div>
+
+            <div class="a2_inner_content_3">
+                <div class="a2_inner_content_3_main">
+                    <div class="a2_inner_content_3_img">
+                        <img src="../assets/peli_maa.svg" alt="">
+                    </div>
+                    <div class="a2_inner_content_3_info">
+                        <p>Maa</p>
+                        <p id="country">country name</p>
+                    </div>
+                </div>
+                <div class="a2_inner_content_3_main">
+                    <div class="a2_inner_content_3_img">
+                        <img src="../assets/peli_maanosa.svg" alt="">
+                    </div>
+                    <div class="a2_inner_content_3_info">
+                        <p>Maanosa</p>
+                        <p id="continent">continent name</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="a2_inner_content_4">
+                <button class="a2_inner_content_4_button" id="valitse_lentokenta_1">Lennä tänne →</button>
+            </div> 
+        </div>
+
     </div>
 
 </div>

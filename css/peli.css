@@ -10,16 +10,30 @@
     padding: 10px;
 
     width: 95%;
+    height: 50%;
+}
+
+/* ylin div muotoilu */
+#ajankohtainen_tieto_ylin{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .ajankohtainen_tieto_1_inner{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    height: 50%;
     gap: 20px;
 }
 .icon{
     width: 34px;
     height: auto;
+}
+#Polttoainetta_jaljella{
+    width: 17px;
+    margin: 0px 7px 0px 7px;
 }
 
 .ajankohtainen_tieto_1_inner p{
@@ -30,4 +44,110 @@
 }
 #current_airport, #fuel_left{
     font-weight: bold;
+}
+
+#karta_tieto_div{
+    width: 65%;
+    height: 100%;
+    border-radius: 13px;
+}
+
+
+/* alin div muotoilu */
+#ajankohtainen_tieto_alin{
+    border: 2px solid #0026ff00;
+
+    padding-top: 0px;
+    padding-bottom: 0px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* ajankohtainen_tieto_2_inner */
+.ajankohtainen_tieto_2_inner{
+    display: flex;
+    flex-direction: column;
+    /*justify-content: space-between;*/
+    align-items: center;
+
+    height: max-content;
+    width: 32.5%;
+
+    border: 2px solid #1935CA;
+    border-radius: 13px;
+}
+
+/* .a2_inner_content_1 -> */
+.a2_inner_content_1{
+    width: 97%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    border-bottom: 2px solid #1935CA;
+}
+#municipality{
+    margin-left: 4%;
+    margin-right: 55%;
+}
+
+/* .a2_inner_content_3 -> */
+.a2_inner_content_3{
+    width: 100%;
+}
+.a2_inner_content_3_main{
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-self: stretch;
+}
+.a2_inner_content_3_img{
+    width: 50%;
+}
+.a2_inner_content_3_img img{
+    width: 30%;
+    margin-left: 20%;
+    margin-right: auto;
+}
+.a2_inner_content_3_info{
+    width: 50%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.a2_inner_content_3_info p{
+    font-size: 16px;
+    margin: 0px;
+}
+
+/* .a2_inner_content_4 -> */
+.a2_inner_content_4{
+    width: 100%;
+    text-align: center;
+}
+.a2_inner_content_4_button{
+    width: 90%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    background-color: #1935CA;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
