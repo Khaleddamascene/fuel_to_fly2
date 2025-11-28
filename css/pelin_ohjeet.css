@@ -1,0 +1,67 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+
+}
+
+.content{
+    border: 2px;
+    border-radius: 10px;
+    padding: 15px;
+
+}
+
+.card {
+    display: flex;
+    gap: 12px;
+
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: linear-gradient(180deg, #fff, #fdfdff);
+}
+
+
+
+.card h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.card p {
+    margin: 6px 0 0 0;
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+
+.card.goal {
+    border: 2px solid rgba(24,51,214,0.06);
+
+}
+
+.card.fuel{
+    border: 2px solid #e6fbef;
+}
+
+
+.card.fuel {
+    border: 2px solid #f7eecc;
+}
+
+
+.card.scores{
+    border: 2px solid #feeceb;
+}
+
+.bullet {
+    margin: 8px 0 0 0;
+    padding-left: 18px;
+    font-size: 13px;
+}
