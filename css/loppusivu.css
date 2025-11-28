@@ -1,0 +1,80 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.yhteenveto {
+    margin: 10px;
+    padding-top: 10px;
+}
+
+.yhteenveto img{
+    width: 12%;
+    }
+.yhteenveto p {
+    margin: 5px;
+    }
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    margin-top: 40px;
+    gap: 40px;
+}
+
+.box1, .box2, .box3 {
+    flex: 1;
+    padding: 40px 20px;
+    margin-bottom: 10px;
+    text-align: center;
+    box-sizing: border-box;
+    border: 2px solid #1935CA;
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.box1 img, .box2 img, .box3 img {
+    width: 50%;
+    margin: 0 auto;
+}
+
+        
+.main_box {
+    max-width: 50rem;
+    margin: 50px auto;
+    text-align: center;
+    border: 3px solid #1935CA;
+    border-radius: 15px;
+    padding: 2rem 2rem 3rem;
+}
+
+
+#pelaa_nappi{
+    width: 30%;
+    padding: 14px;
+    margin: 20px;
+    font-size: 16px;
+    border: 2px solid #1935CA;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    background: #1935CA;
+    }
+
+#etusivu_nappi {
+    width: 30%;
+    padding: 14px;
+    margin: 20px;
+    font-size: 16px;
+    border: 2px solid #1935CA;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #1935CA;
+    background: #fff;
+}
