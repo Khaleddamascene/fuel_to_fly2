@@ -3,57 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/yleinen.css">
+    <!-- <link rel="stylesheet" href="../css/yleinen.css">-->
     <link rel="stylesheet" href="../css/pelin_ohjeet.css">
     <script src="../javascript/front_end.js" defer></script>
     <title>Fuel To Fly</title>
 </head>
 <body>
-<header>
-    <section class="content">
-        <article class="card goal">
-            <div>
-                <h3 id="goal-title">Tavoite</h3>
-                <p>Lennä niin moneen lentokenttään kuin mahdollista ja lennätä mahdollisimman pitkä matka ennen kuin polttoaine loppuu.</p>
+    <main>
+        <header class="header">
+                <div class="logo">&#9992;</div>
+                <div class="title">Fuel to fly</div>
+        </header>
+
+        <h1>Pelin Ohjeet</h1>
+
+        <section class="content" aria-label="Ohjeet">
+
+            <div class="cards">
+
+                <article class="card card-blue">
+                    <div class="icon">🎯
+                    </div>
+                    <div>
+                        <h3>Tavoite</h3>
+                        <p>
+                            Lennä niin moneen lentokenttään kuin mahdollista ja lennätä mahdollisimman pitkä matka ennen kuin polttoaine loppuu.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="card card-orange">
+                    <div class="icon">⛽
+                    </div>
+                    <div>
+                        <h3>Polttoaine</h3>
+                        <p>
+                           Aloitat 1000 polttoaineyksikköä. Jokainen lento kuluttaa polttoainetta matkan mukaan. Pidä silmällä polttoainemittaria!
+                        </p>
+                    </div>
+                </article>
+
+                <article class="card card-green">
+                    <div class="icon">✈️
+                    </div>
+                    <div>
+                        <h3>Kenttien valinta</h3>
+                        <p>
+                            Jokaisella kierroksella valitset seuraavan lentokentän kolmesta vaihtoehdosta eri puolilta maailmaa.
+                        </p>
+                        <ul>
+                          <li>Voit valita minkä tahansa kentän riippumatta polttoainemäärästä</li>
+                          <li>Jokainen onnistunut lento antaa +200 polttoaineyksikköä bonuksena</li>
+                          <li>Näet kartalla minne saavut ja saat tietoa kaupungista, maasta ja maanosasta</li>
+                          <li>Peli päättyy kun polttoaine loppuu</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="card card-yellow">
+                    <div class="icon">🏆
+                    </div>
+                    <div>
+                        <h3>Pisteet ja ennätykset</h3>
+                        <p>
+                            Tuloksesi perustuu vierailtujen kenttien määrään ja kokonaislennettyyn matkaan. Parhaat tulokset tallennetaan!
+                        </p>
+                    </div>
+                </article>
             </div>
-        </article>
-
-
-        <article class="card fuel">
-            <div>
-                <h3 id="fuel-title">Polttoaine</h3>
-                <p>Aloitat 1000 polttoaineyksikköä. Jokainen lento kuluttaa polttoainetta matkan mukaan. Pidä silmällä polttoainemittaria!</p>
-            </div>
-        </article>
-
-        <article class="card goal">
-            <div>
-                <h3 id="runways-title">Kenttien valinta</h3>
-                <p>okaisella kierroksella valitset seuraavan lentokentän kolmesta vaihtoehdosta:</p>
-                <ul class="bullet">
-                    <li>Lähin kenttä (Turvallinen) – Lyhyt matka, vähän polttoainetta</li>
-                    <li>Keskimäinen (Neutraali) – Keskipitkä matka</li>
-                    <li>Kaukaisin (Riskialtis) – Pitkä matka, paljon polttoainetta</li>
-                </ul>
-            </div>
-        </article>
-
-        <article class="card scores">
-            <div>
-                <h3 id="score-title">Pisteet ja ennätykset</h3>
-                <p>Tuloksesi perustuu vierailettujen kenttien määrään ja kokonaislennetyyn matkaan. Parhaat tulokset tallennetaan.</p>
-            </div>
-        </article>
-
-    </section>
-
-
-</header>
-
-
-
-<footer>
-
-</footer>
+                <button class="close-btn">Sulje ohjeet</button>
+        </section>
+    </main>
 </body>
 </html>
