@@ -1,0 +1,9 @@
+! Please folow this guide !
+! Dont do anything else !
+
+1. Open my sql client (MarjaDB).
+2. Open fuel_to_fly_2.sql file control+a after control+c
+3. paste it all into a sql client
+4. wate some time. if you have en error I don't know how to help you!
+
+! dont do anything else !
