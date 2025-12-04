@@ -1,4 +1,5 @@
-import mysql.connector
+from db import get_connection
+# import mysql.connector
 import random
 import Visuals
 from flask import Flask, jsonify, send_from_directory
@@ -11,16 +12,7 @@ from geopy.distance import geodesic
 app = Flask(__name__)
 CORS(app)
 
-# --- TIETOKANTAYHTEYS ---
-def get_connection():
-    return mysql.connector.connect(
-        host='127.0.0.1',
-        port=3306,
-        database='fuel_to_fly',
-        user='Dornaraj',
-        password='123',
-        autocommit=True
-    )
+
 
 # --- FLASK REITTI TULOSTEN HAKEMISEKSI ---
 
