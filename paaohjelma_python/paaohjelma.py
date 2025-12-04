@@ -1,5 +1,6 @@
 from db import get_connection
-# import mysql.connector
+
+import mysql.connector
 import random
 import Visuals
 from flask import Flask, jsonify, send_from_directory
@@ -11,7 +12,6 @@ from geopy.distance import geodesic
 
 app = Flask(__name__)
 CORS(app)
-
 
 
 # --- FLASK REITTI TULOSTEN HAKEMISEKSI ---
@@ -32,6 +32,8 @@ def hae_tulokset():
 def home():
     return send_from_directory('.', 'tulokset.html')
 # ----------------------Tulokset-sivustolle Route Loppu --
+ 
+
 
 # --- KOMENNOT ---
 komennot = [
@@ -170,7 +172,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 # --- MAIN ---
 if __name__ == "__main__":
     # !!(kommentoi alla oleva jos haluat käynnistää TERMINAL PELIN Fuel_to_fly1 "app.run(debug=True) tai 'Ctrl C' lopettaa palvelimen)!!")
-    app.run(debug=True)
+    #app.run(debug=True)
     
     Visuals.logo
     peliJatkuu = True
