@@ -3,9 +3,11 @@ import mysql.connector
 def get_connection():
     return mysql.connector.connect(
         host='127.0.0.1',
-        port=3306,
+        port=3307,
         database='fuel_to_fly',
         user='Dornaraj',
         password='123',
+        user='root',
+        password='1234',
         autocommit=True
     )
