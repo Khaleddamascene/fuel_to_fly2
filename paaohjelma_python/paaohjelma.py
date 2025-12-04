@@ -141,8 +141,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
 # --- MAIN ---
 if __name__ == "__main__":
-    # !!(kommentoi alla oleva jos haluat käynnistää TERMINAL PELIN Fuel_to_fly1 "app.run(debug=True) tai 'Ctrl C' lopettaa palvelimen)!!")
-    #app.run(debug=True)
+
     
     Visuals.logo
     peliJatkuu = True
