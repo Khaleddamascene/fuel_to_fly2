@@ -17,8 +17,8 @@ def get_connection():
         host='127.0.0.1',
         port=3306,
         database='fuel_to_fly',
-        user='andrei',
-        password='1234',
+        user='Dornaraj',
+        password='123',
         autocommit=True
     )
 
@@ -40,8 +40,6 @@ def hae_tulokset():
 def home():
     return send_from_directory('.', 'tulokset.html')
 # ----------------------Tulokset-sivustolle Route Loppu --
- 
-
 
 # --- KOMENNOT ---
 komennot = [
