@@ -1,0 +1,209 @@
+:root{
+    --sininen: #0b59e8;
+    --vaalea-sininen: #e6f2ff;
+    --punainen: #e74c3c;
+    --tausta: #f7f7f9;
+    --kortti-tausta: #fbfbfb;
+    --varoitus-punainen: #f76161;
+    --varoitus-harmaa: #f3eded;
+    --kortin-reuna: rgba(12,140,255,0.9);
+    --kortin-padding: 24px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: var(--tausta);
+    color: #222;
+    -webkit-font-smoothing:antialiased;
+}
+
+/* Ylätunniste */
+.ylatunniste {
+    padding: 18px 24px;
+}
+.logo_paikka {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo {
+    height: 36px;
+}
+
+/* Keskitetty iso kortti koko sivun keskelle leveydeltään */
+.sivu_kortti {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 18px;
+}
+
+.sisalto_kehys {
+    width: 100%;
+    max-width: 666px;
+    background: linear-gradient(#ffffff, #fbfbfb);
+    border: 3px solid var(--kortin-reuna);
+    border-radius: 18px;
+    padding: var(--kortin-padding);
+    box-shadow: 0 8px 24px rgba(6,40,120,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+
+.varoitus_osa {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-top: 4px;
+}
+.varoitus_osa img {
+    width: 82px;
+    height: 82px;
+    border-radius: 18px;
+    padding: 6px;
+    background: linear-gradient(180deg,#fff7f7,#fff0f0);
+    border: 3px solid rgba(247,97,97,0.92);
+    object-fit: contain;
+}
+.varoitus_otsikko {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--varoitus-punainen);
+    font-weight: 700;
+}
+
+.kuva_alue {
+    width: 100%;
+    max-height: 320px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #efefef, #e6e6e6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) inset;
+    position: relative;
+}
+.kuva_alue img {
+    width: 100%;
+    height: 100%;
+    max-height: 320px;
+    height: 280px;
+    object-fit: cover;
+    object-position: bottom;
+    object-position: center 85%;
+    display: block;
+}
+
+.ilmoitus_kortti {
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 12px;
+    align-items: flex-start;
+    background: linear-gradient(180deg,#fff,#fff8f8);
+    border: 1px solid rgba(231,76,60,0.14);
+    box-shadow: 0 6px 16px rgba(231,76,60,0.03);
+}
+.ilmo_ikoni {
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(231,76,60,0.08);
+    overflow: hidden;
+}
+.ilmo_ikoni img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+.ilmo_sisalto { 
+    flex: 1; text-align: left; 
+}
+.ilmo_paa {
+    margin: 0 0 6px 0;
+    font-size: 1.05rem;
+    color: #8b1f1f;
+    font-weight: 800;
+}
+.ilmo_alateksti {
+    margin: 0 0 8px 0;
+    color: #8b1f1f;
+    font-weight: 700;
+}
+.ilmo_kuvaus {
+    margin: 0;
+    color: #333;
+    line-height: 1.6;
+    font-size: 0.98rem;
+}
+
+.vinkki_kuvaus {
+    width: 100%;
+    height: 64px;
+    margin-top: 6px;
+    border-radius: 12px;
+    background: var(--vaalea-sininen);
+    border: 1px solid rgba(11,89,232,0.10);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 0 12px;
+}
+
+.nappirivi {
+    display: flex;
+    gap: 14px;
+    margin-top: 8px;
+    width: 100%;
+    justify-content: space-between;
+}
+.nappi_sininen, .nappi_valkoinen {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.98rem;
+    cursor: pointer;
+}
+.nappi_sininen {
+    background: var(--sininen);
+    color: #fff;
+    border: 2px solid rgba(11,89,232,0.18);
+    box-shadow: 0 6px 0 rgba(11,89,232,0.08);
+}
+.nappi_valkoinen {
+    background: #fff;
+    color: var(--sininen);
+    border: 2px solid rgba(11,89,232,0.22);
+}
+
+@media (max-width: 640px) {
+    .sisalto_kehys { padding: 16px; border-radius: 14px; }
+    .kuva_alue { max-height: 200px; }
+    .ilmo_ikoni { width: 60px; height: 60px; min-width:60px; }
+    .ilmo_ikoni img { width: 44px; height: 44px; }
+    .tyhja_ruutu { height: 48px; }
+    .nappirivi { flex-direction: column; }
+    .nappi_sininen, .nappi_valkoinen { width: 100%; }
+}
