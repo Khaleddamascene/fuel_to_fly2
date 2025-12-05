@@ -18,6 +18,17 @@ def hae_tulokset():
     yhteys.close()
     return jsonify(tulokset)
 
+@app.route("/api/pelaaja/<int:pelaaja_id>")
+def pelaaja_data(pelaaja_id):
+    yhteys = get_connection()
+    cursor = yhteys.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM results")
+    tulokset = cursor.fetchall()
+    cursor.close()
+    yhteys.close()
+    return jsonify(tulokset)
+
+
 # LÄHETÄ Kartan tietoja front endin#
 @app.route("/api/location")
 def hae_sijainti():

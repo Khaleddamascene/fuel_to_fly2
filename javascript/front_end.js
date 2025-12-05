@@ -55,3 +55,36 @@ async function HaeTuloksetFun() {
 document.addEventListener('DOMContentLoaded', HaeTuloksetFun);
 
 // _____HaeTuloksetFun function Loppu _________________________________
+
+
+async function HaePelaajaData() {
+    try {
+        const response = await fetch("http://localhost:5000/api/pelaaja/1");
+        const data = await response.json();
+
+        // Hekee viimeisimmän pelaajan tietokannasta
+            if (data.length > 0) {
+                const viimeinenPelaaja = data[data.length - 1];
+
+            // Haetaan HTML elementit niiden ID:n perusteella
+
+                document.getElementById("pelaajan_nimi").textContent = viimeinenPelaaja.player_name || "-";
+                document.getElementById("vierailtuja_kenttia").textContent = viimeinenPelaaja.visited_count || "-";
+                document.getElementById("kokonaismatka").textContent = (viimeinenPelaaja.total_distance || 0) + " km";
+                document.getElementById("kaytetty_bensa").textContent = viimeinenPelaaja.fuel_used || "-";
+        } else {
+            console.error("Ei pelaajia listassa.");
+        }
+    // HTML default arvot tai pyyntö epäonnistuu 
+    } catch (error) {
+        console.error("Virhe datan haussa:", error);
+        document.getElementById("pelaajan_nimi").textContent = "Ei dataa";
+        document.getElementById("vierailtuja_kenttia").textContent = "-";
+        document.getElementById("kokonaismatka").textContent = "- km";
+        document.getElementById("kaytetty_bensa").textContent = "-";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", HaePelaajaData);
+
+// _____HaePelaajaData function Loppu _________________________________
