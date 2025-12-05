@@ -5,7 +5,6 @@ from db import get_connection
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route("/api/tulokset")
 def hae_tulokset():
     yhteys = get_connection()
@@ -15,7 +14,6 @@ def hae_tulokset():
     cursor.close()
     yhteys.close()
     return jsonify(tulokset)
-
 
 @app.route("/")
 def home():
