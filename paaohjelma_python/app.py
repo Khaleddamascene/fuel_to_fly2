@@ -30,7 +30,7 @@ def hae_sijainti():
         return jsonify(data)   
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+       
 @app.route("/")
 def home():
     return send_from_directory('.', 'tulokset.html')
