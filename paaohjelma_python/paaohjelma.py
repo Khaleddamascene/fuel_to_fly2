@@ -4,6 +4,17 @@ import Visuals
 from geopy.distance import geodesic
 import json
 
+# Tyhjenä location.json pelin alussa 
+def reset_location_file():
+    with open("location.json", "w") as f:
+        json.dump({
+            "lat": 60.1699,
+            "lon": 24.9384,
+            "ident": 0,
+            "name": "peli ei ole alkanut",
+            "fuel": 1000
+        }, f)
+reset_location_file()
 
 # --- KOMENNOT ---
 komennot = [
@@ -133,6 +144,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
     if bensa < matka:
         print(f"Polttoaine ei riitä lennolle ({matka:.1f} km). Peli päättyy.")
+        reset_location_file()
         return pelaaja_kentta, 0, 0
 
     bensa -= int(matka)
