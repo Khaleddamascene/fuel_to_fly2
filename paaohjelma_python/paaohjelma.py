@@ -2,7 +2,7 @@ from db import get_connection
 import random
 import Visuals
 from geopy.distance import geodesic
-
+import json
 
 
 # --- KOMENNOT ---
@@ -72,6 +72,18 @@ def alku():
 
     cursor.close()
     yhteys.close()
+
+    # LÄHETÄ Kartan tietoja json muodossa#
+    with open("location.json", "w") as f:
+        json.dump({
+            "lat": lat,
+            "lon": lon,
+            "ident": pelaaja_ident,
+            "name": pelaaja_nimi,
+            "fuel": bensa
+        }, f)
+    # LÄHETÄ Kartan tietoja json muodossa#
+
     return nimi, kaikki_kentat, (pelaaja_ident, pelaaja_nimi, (lat, lon)), bensa
 
 
@@ -136,6 +148,18 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
     print(f"Lensit {matka:.1f} km. Polttoainetta jäljellä {bensa:.0f}.\n")
 
     uusi_kentta = (valittu[0], valittu[1], valittu[3])
+
+    # LÄHETÄ Kartan tietoja json muodossa#
+    with open("location.json", "w") as f:
+        json.dump({
+            "lat": valittu[3][0],
+            "lon": valittu[3][1],
+            "ident": valittu[0],
+            "name": valittu[1],
+            "fuel": bensa
+        }, f)
+    # LÄHETÄ Kartan tietoja json muodossa#
+
     return uusi_kentta, bensa, matka
 
 
