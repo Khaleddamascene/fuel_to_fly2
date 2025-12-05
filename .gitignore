@@ -21,4 +21,7 @@ __________________________________________________
 
 paaohjelma_python/paaohjelma_copy.py
 .gitignore
-/paaohjelma_python
+
+paaohjelma_python/db.py
+
+
