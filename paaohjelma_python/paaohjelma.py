@@ -1,19 +1,35 @@
-from db import get_connection
+import mysql.connector
 import random
-import Visuals
 from geopy.distance import geodesic
 import json
+import Visuals
 
-# Tyhjenä location.json pelin alussa 
-def reset_location_file():
+
+def get_connection():
+    return mysql.connector.connect(
+        host='127.0.0.1',
+        port=3307,
+        database='fuel_to_fly',
+        user='khaled',
+        password='1234',
+        autocommit=True
+    )
+
+
+# --- JSON APUFUNKTIO ---
+def paivita_location_json(ident, name, lat, lon, fuel):
     with open("location.json", "w") as f:
         json.dump({
-            "lat": 60.1699,
-            "lon": 24.9384,
-            "ident": 0,
-            "name": "peli ei ole alkanut",
-            "fuel": 1000
+            "lat": lat,
+            "lon": lon,
+            "ident": ident,
+            "name": name,
+            "fuel": fuel
         }, f)
+
+def reset_location_file():
+    paivita_location_json(0, "peli ei ole alkanut", 60.1699, 24.9384, 1000)
+
 reset_location_file()
 
 # --- KOMENNOT ---
@@ -21,7 +37,6 @@ komennot = [
     (["apua", "h", "a", "komennot"], "apua", "Näytä kaikki komennot"),
     (["ohje", "ohjeet", "o"], "ohje", "Näytä pelin ohjeet")
 ]
-
 
 # --- OHJEET ---
 def Ohjeet():
@@ -32,7 +47,6 @@ def Ohjeet():
     print("- Kaukaisin kenttä: riski, kuluttaa paljon polttoainetta.")
     print("Jos polttoaine loppuu, peli päättyy.")
     input("Paina ENTER jatkaaksesi...")
-
 
 # --- KOMENTOKÄSITTELY ---
 def HaeKomento(komento):
@@ -48,13 +62,11 @@ def HaeKomento(komento):
             return True
     return False
 
-
 def Puhe():
     while True:
         puhe = input("> ").lower().strip()
         if not HaeKomento(puhe):
             return puhe
-
 
 # --- PELIN ALKU ---
 def alku():
@@ -62,11 +74,17 @@ def alku():
     cursor = yhteys.cursor()
 
     cursor.execute("""
-                   SELECT ident, name, latitude_deg, longitude_deg
-                   FROM airport
-                   WHERE latitude_deg IS NOT NULL
-                     AND longitude_deg IS NOT NULL
-                   """)
+        SELECT a.ident,
+               a.name,
+               a.latitude_deg,
+               a.longitude_deg,
+               a.municipality,
+               c.name AS country_name
+        FROM airport a
+        LEFT JOIN country c ON a.iso_country = c.iso_country
+        WHERE a.latitude_deg IS NOT NULL
+          AND a.longitude_deg IS NOT NULL
+    """)
     kaikki_kentat = cursor.fetchall()
 
     nimi = input("Syötä pelaajan nimi: ").strip()
@@ -74,29 +92,19 @@ def alku():
         nimi = input("Nimi ei voi olla tyhjä. Anna nimi: ").strip()
 
     aloitus = random.choice(kaikki_kentat)
-    pelaaja_ident, pelaaja_nimi, lat, lon = aloitus
-    bensa = 1000
+    pelaaja_ident, pelaaja_nimi, lat, lon, municipality, country_name = aloitus
+    bensa = 1000.0
 
     print(f"\nTervetuloa peliin, {nimi}!")
     print(f"Aloitat kentältä: {pelaaja_nimi} ({pelaaja_ident})")
-    print(f"Polttoainetta käytössäsi: {bensa} yksikköä.\n")
+    print(f"Polttoainetta käytössäsi: {bensa:.0f} yksikköä.\n")
 
     cursor.close()
     yhteys.close()
 
-    # LÄHETÄ Kartan tietoja json muodossa#
-    with open("location.json", "w") as f:
-        json.dump({
-            "lat": lat,
-            "lon": lon,
-            "ident": pelaaja_ident,
-            "name": pelaaja_nimi,
-            "fuel": bensa
-        }, f)
-    # LÄHETÄ Kartan tietoja json muodossa#
+    paivita_location_json(pelaaja_ident, pelaaja_nimi, lat, lon, bensa)
 
     return nimi, kaikki_kentat, (pelaaja_ident, pelaaja_nimi, (lat, lon)), bensa
-
 
 # --- PELIN PÄÄOSA ---
 def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
@@ -104,27 +112,29 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
     print(f"\nNykyinen kenttä: {pelaaja_kentta_nimi} ({pelaaja_ident})")
 
     kentta_etaisyydet = []
-    for ident, name, lat, lon in kaikki_kentat:
+    for ident, name, lat, lon, municipality, country in kaikki_kentat:
         if ident == pelaaja_ident or ident in kayty_kentat:
             continue
         matka = geodesic(pelaaja_sijainti, (lat, lon)).km
-        kentta_etaisyydet.append((ident, name, matka, (lat, lon)))
+        kentta_etaisyydet.append((ident, name, matka, (lat, lon), municipality, country))
 
     if len(kentta_etaisyydet) < 3:
         print("Ei enää uusia kenttiä — peli päättyy!")
         return pelaaja_kentta, bensa, 0
 
     kentta_etaisyydet.sort(key=lambda x: x[2])
-    lahin, keskimmainen, kaukaisin = kentta_etaisyydet[0], kentta_etaisyydet[len(kentta_etaisyydet) // 2], \
-    kentta_etaisyydet[-1]
+    lahin, keskimmainen, kaukaisin = kentta_etaisyydet[0], kentta_etaisyydet[len(kentta_etaisyydet)//2], kentta_etaisyydet[-1]
     jarjestetyt = [lahin, keskimmainen, kaukaisin]
 
     vaihtoehdot = jarjestetyt.copy()
     random.shuffle(vaihtoehdot)
 
-    print("\nVaihtoehtoiset lentokentät:")
-    for i, (ident, name, _, _) in enumerate(vaihtoehdot, start=1):
-        print(f"{i}. {name} ({ident})")
+    print("Vaihtoehtoiset lentokentät:")
+    for i, (ident, name, dist, sijainti, municipality, country) in enumerate(vaihtoehdot, start=1):
+        print(f"{i}. Kaupunki: {municipality}")
+        print(f"   Lentokenttäkoodi: {ident}")
+        print(f"   Lentokenttä: {name}")
+        print(f"   Maa: {country}\n")
 
     # Valinta
     while True:
@@ -147,7 +157,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
         reset_location_file()
         return pelaaja_kentta, 0, 0
 
-    bensa -= int(matka)
+    bensa -= matka
 
     if valittu == jarjestetyt[0]:
         print("Turvallinen valinta! Saat lisää polttoainetta (+200).")
@@ -160,51 +170,37 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
     print(f"Lensit {matka:.1f} km. Polttoainetta jäljellä {bensa:.0f}.\n")
 
     uusi_kentta = (valittu[0], valittu[1], valittu[3])
-
-    # LÄHETÄ Kartan tietoja json muodossa#
-    with open("location.json", "w") as f:
-        json.dump({
-            "lat": valittu[3][0],
-            "lon": valittu[3][1],
-            "ident": valittu[0],
-            "name": valittu[1],
-            "fuel": bensa
-        }, f)
-    # LÄHETÄ Kartan tietoja json muodossa#
+    paivita_location_json(valittu[0], valittu[1], valittu[3][0], valittu[3][1], bensa)
 
     return uusi_kentta, bensa, matka
-
 
 # --- MAIN ---
 if __name__ == "__main__":
 
-    
-    Visuals.logo
+    Visuals.logo()
     peliJatkuu = True
-    while (peliJatkuu):
+    while peliJatkuu:
         print("=== Fuel to Fly ===\n")
         input("Paina ENTER aloittaaksesi!\n")
 
         print("Kirjoita 'ohje' saadaksesi pelin ohjeet.\n")
-
         Puhe()
-        nimi, kaikki_kentat, kentta, bensa = alku()
 
+        nimi, kaikki_kentat, kentta, bensa = alku()
         kayty_kentat = [kentta[0]]
         kokonaismatka = 0
 
         while bensa > 0:
             kentta, bensa, matka = pelaa_peli(kentta, kaikki_kentat, kayty_kentat, bensa)
-            if kentta[0] not in kayty_kentat and bensa > 0:
+            if bensa > 0:
                 kayty_kentat.append(kentta[0])
                 kokonaismatka += matka
 
         while True:
-            uusiksi = input().lower().strip()
-            print("Haluatko jatkaa? (Kyllä/Ei)")
-            if uusiksi == "kyllä" or uusiksi == "k":
+            uusiksi = input("Haluatko jatkaa? (Kyllä/Ei) ").lower().strip()
+            if uusiksi in ("kyllä", "k"):
                 break
-            elif uusiksi == "ei" or uusiksi == "e":
+            elif uusiksi in ("ei", "e"):
                 peliJatkuu = False
                 break
 
@@ -212,34 +208,28 @@ if __name__ == "__main__":
         yhteys = get_connection()
         cursor = yhteys.cursor()
 
-        nickname = nimi
-        visited_count = len(kayty_kentat)
-        total_distance = kokonaismatka
-
         sql = "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)"
-        values = (nickname, visited_count, total_distance)
+        values = (nimi, len(kayty_kentat), kokonaismatka)
         cursor.execute(sql, values)
         yhteys.commit()
 
-        print(f"Sinä {nickname} vierailit {visited_count} kentässä ja lensit yhteensä {total_distance:.2f} km\n")
+        print(f"\nSinä {nimi} vierailit {len(kayty_kentat)} kentässä ja lensit yhteensä {kokonaismatka:.2f} km\n")
 
         # Paras tulos kenttien mukaan
         cursor.execute(
             "SELECT player_name, visited_count, total_distance FROM results ORDER BY visited_count DESC, total_distance DESC LIMIT 1")
         best_by_airports = cursor.fetchone()
-        if best_by_airports[0] == nickname:
+        if best_by_airports and best_by_airports[0] == nimi:
             print("! Congratulations New Record! Vierailit eniten lentokenttiä")
-        print(
-            f"Eniten kenttiä: {best_by_airports[0]} vieraili {best_by_airports[1]} kentässä ja lensi {best_by_airports[2]:.2f} km\n")
+        print(f"Eniten kenttiä: {best_by_airports[0]} vieraili {best_by_airports[1]} kentässä ja lensi {best_by_airports[2]:.2f} km\n")
 
         # Paras matkan pituuden mukaan
         cursor.execute(
             "SELECT player_name, visited_count, total_distance FROM results ORDER BY total_distance DESC, visited_count DESC LIMIT 1")
         best_by_distance = cursor.fetchone()
-        if best_by_distance[0] == nickname:
+        if best_by_distance and best_by_distance[0] == nimi:
             print("! Congratulations New Record! Lensit pisimmän matkan")
-        print(
-            f"Isoin matka: {best_by_distance[0]} vieraili {best_by_distance[1]} kentässä ja lensi {best_by_distance[2]:.2f} km\n")
+        print(f"Isoin matka: {best_by_distance[0]} vieraili {best_by_distance[1]} kentässä ja lensi {best_by_distance[2]:.2f} km\n")
 
-    cursor.close()
-    yhteys.close()
+        cursor.close()
+        yhteys.close()
