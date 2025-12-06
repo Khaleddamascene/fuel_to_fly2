@@ -1,20 +1,8 @@
-import mysql.connector
+from db import get_connection
 import random
 from geopy.distance import geodesic
 import json
 import Visuals
-
-
-def get_connection():
-    return mysql.connector.connect(
-        host='127.0.0.1',
-        port=3307,
-        database='fuel_to_fly',
-        user='khaled',
-        password='1234',
-        autocommit=True
-    )
-
 
 # --- JSON APUFUNKTIO ---
 def paivita_location_json(ident, name, lat, lon, fuel):
