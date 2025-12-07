@@ -1,5 +1,5 @@
 // Tämä Function hakee tulokset Flask-palvelimelta ja päivittää HTML-taulukot
-
+"use strict";
 async function HaeTuloksetFun() {
     try {
         const response = await fetch('http://localhost:5000/api/tulokset');
