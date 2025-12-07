@@ -1,23 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Kun peli häviää</title>
     <link rel="stylesheet" href="../css/yleinen.css">
     <link rel="stylesheet" href="../css/kun_peli_haviaa.css">
-    <script src="../javascript/front_end.js" defer></script>
-    <title>Fuel To Fly</title>
 </head>
 <body>
-<header>
-
+<!-- K -->
+<header class="ylatunniste">
+    <div class="logo_paikka">
+        <img class="logo" src="../assets/Fuel_to_fly_logo.svg" alt="Fuel To Fly logo">
+    </div>
 </header>
+<main class="sivu_kortti">
+    <section class="sisalto_kehys">
+        <div class="varoitus_osa">
+            <img src="../assets/Alert_triangle.svg" alt="Alert_triangle">
+            <h1 class="varoitus_otsikko">Polttoaine loppui!</h1>
+        </div>
 
+        <div class="kuva_alue">
+            <img src="../assets/lentokone_havio.jpg" alt="lentokone_havio"> <!-- Kuva on jpg ja eri kuva, mutta voi vaihtaa tai jotai. -->
+        </div>
 
+        <article class="ilmoitus_kortti ilmoitus_kortti_varo">
+            <div class="ilmo_ikoni">
+                <img src="../assets/Polttoainetta_jaljella.svg" alt="Polttoainetta_jaljella">
+            </div>
+            <div class="ilmo_sisalto">
+                <h2 class="ilmo_paa">Lento päättyi</h2>
+                <p class="ilmo_alateksti">Polttoaine loppui kentällä: <strong>Turku (TKU)</strong></p>
+                <p class="ilmo_kuvaus">
+                    Lensit <strong>5</strong> kentälle ja kokonaismatka oli <strong>582 km</strong>.
+                    Valitettavasti polttoaine loppui kesken ja et voinut jatkaa matkaa.
+                </p>
+            </div>
+        </article>
 
+        <p class="vinkki_kuvaus">
+            💡<strong>Vinkki:</strong> Yritä tasapainottaa lyhyet ja pitkät lennot säästääksesi polttoainetta pidemmälle matkalle!
+        </p>
 
-<footer>
+        <div class="nappirivi">
+            <a class="nappi_sininen" href="loppusivu.html">Näytä tulokset</a>
+            <a class="nappi_valkoinen" href="alku_sivu.html">Palaa alkuun</a>
+        </div>
+    </section>
+</main>
 
-</footer>
 </body>
 </html>
