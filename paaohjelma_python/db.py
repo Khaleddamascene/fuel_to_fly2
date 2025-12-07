@@ -5,8 +5,7 @@ def get_connection():
         host='127.0.0.1',
         port=3306,
         database='fuel_to_fly',
-        user='root',
-        password='1234',
-
+        user='Dornaraj',
+        password='123',
         autocommit=True
     )
