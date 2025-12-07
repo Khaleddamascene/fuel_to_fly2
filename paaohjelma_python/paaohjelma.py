@@ -11,7 +11,6 @@ komennot = [
     (["ohje", "ohjeet", "o"], "ohje", "Näytä pelin ohjeet")
 ]
 
-
 # --- OHJEET ---
 def Ohjeet():
     print("\nOhjeet:")
