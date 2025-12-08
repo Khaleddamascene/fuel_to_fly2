@@ -66,12 +66,13 @@ async function HaePelaajaData() {
             if (data.length > 0) {
                 const viimeinenPelaaja = data[data.length - 1];
 
-            // Haetaan HTML elementit niiden ID:n perusteella
+            // Haetaan HTML elementit niiden ID:n pelaajan_nimi
 
                 document.getElementById("pelaajan_nimi").textContent = viimeinenPelaaja.player_name || "-";
                 document.getElementById("vierailtuja_kenttia").textContent = viimeinenPelaaja.visited_count || "-";
                 document.getElementById("kokonaismatka").textContent = (viimeinenPelaaja.total_distance || 0) + " km";
                 document.getElementById("kaytetty_bensa").textContent = viimeinenPelaaja.fuel_used || "-";
+
         } else {
             console.error("Ei pelaajia listassa.");
         }
