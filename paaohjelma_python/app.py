@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request, send_from_directory, session 
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
+from flask import request
 from db import get_connection
 import json
 import os
@@ -8,6 +9,34 @@ import random
 app = Flask(__name__)
 CORS(app)
 app.secret_key = os.urandom(24)
+
+
+@app.route("/api/pelaaja", methods=["POST"])
+def luo_pelaaja():
+    try:
+        data = request.get_json()
+        player_name = data.get("player_name", "").strip()
+
+        if not player_name:
+            return jsonify({"error": "Pelaajan nimi puuttuu"}), 400
+
+        yhteys = get_connection()
+        cursor = yhteys.cursor()
+
+
+        cursor.execute(
+            "INSERT INTO results (player_name) VALUES (%s)",
+            (player_name,)
+        )
+        yhteys.commit()
+        cursor.close()
+        yhteys.close()
+
+        return jsonify({"message": "Pelaaja lisätty onnistuneesti"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # NÄYTÄ Tulokset front endin#
 @app.route("/api/tulokset")
@@ -34,17 +63,17 @@ def pelaaja_data(pelaaja_id):
 # LÄHETÄ Kartan tietoja front endin#
 @app.route("/api/location")
 def hae_sijainti():
-    if not os.path.exists("location.json"): 
+    if not os.path.exists("location.json"):
         return jsonify({"error": "Location data not found"}), 404
-    
+
     try:
         with open("location.json", "r") as f:
             data = json.load(f)
-        return jsonify(data)   
+        return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-# ______________________________hae_sijainti loppuu 
+
+# ______________________________hae_sijainti loppuu
 
 
 # _______________________________Tässä haetaan tietokanasta 3 lentokenttä jä tehdään route _____________________
@@ -53,7 +82,7 @@ def get_Valinnat():
     try:
         yhteys = get_connection()
         cursor = yhteys.cursor(dictionary=True)
-        
+
         # Valitaan satunnaisesti 3 lentokenttää tietokannasta
         cursor.execute("""
             SELECT a.ident, a.name, a.latitude_deg, a.longitude_deg, 
@@ -65,23 +94,23 @@ def get_Valinnat():
             ORDER BY RAND()
             LIMIT 3
         """)
-        
+
         airports = cursor.fetchall()
         cursor.close()
         yhteys.close()
-        
+
         response_choices = []
         for airport in airports:
             airport_info = airport.copy()
-            airport_info["distance"] = round(random.uniform(100, 5000), 2)  
+            airport_info["distance"] = round(random.uniform(100, 5000), 2)
             response_choices.append(airport_info)
-        
+
         return jsonify({
             "choices": response_choices,
             "current_fuel": 1000,
             "message": "Valitse seuraava lentokenttä:"
         })
-        
+
     except Exception as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 # _______________________________ def get_Valinnat loppu_____________________
@@ -92,3 +121,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(debug=True)
+

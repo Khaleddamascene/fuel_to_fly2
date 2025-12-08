@@ -1,5 +1,50 @@
-// Tämä Function hakee tulokset Flask-palvelimelta ja päivittää HTML-taulukot
-"use strict";
+'use strict';
+
+document.addEventListener("DOMContentLoaded", () => {
+    const startForm = document.getElementById("startForm");
+    const playerNameInput = document.getElementById("playerName");
+
+    startForm.addEventListener("submit", async (e) => {
+        e.preventDefault(); // estetään lomakkeen oletusarvoinen lähetys
+
+        const playerName = playerNameInput.value.trim();
+
+        if (playerName === "") {
+            alert("Syötä pelaajan nimi ennen aloitusta!");
+            return;
+        }
+
+        try {
+            // Lähetetään nimi Flask-palvelimelle
+            const response = await fetch("http://localhost:5000/api/pelaaja", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ player_name: playerName }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Pelaajan lisääminen epäonnistui.");
+            }
+
+            const result = await response.json();
+            console.log(result.message);
+
+            localStorage.setItem("pelaajan_nimi", playerName);
+
+
+            window.location.href = "peli.html";
+
+        } catch (error) {
+            console.error("Virhe:", error);
+            alert("Virhe pelaajan lisäämisessä. Tarkista palvelin.");
+        }
+    });
+});
+
+    // Tämä Function hakee tulokset Flask-palvelimelta ja päivittää HTML-taulukot
+
 async function HaeTuloksetFun() {
     try {
         const response = await fetch('http://localhost:5000/api/tulokset');
