@@ -51,15 +51,15 @@ async function HaeTuloksetFun() {
         const response = await fetch('http://localhost:5000/api/tulokset');
         const results = await response.json();
         
-        // Haetaan top 10 pelaajaa eniten kenttiä vierailtu ja pisin matka
+        // Haetaan top 5 pelaajaa eniten kenttiä vierailtu ja pisin matka
         const EnitenKenttiä = [...results].sort((a, b) => 
             b.visited_count - a.visited_count || b.total_distance - a.total_distance
-        ).slice(0, 10);
+        ).slice(0, 5);
         
-        // Haetaan top 10 pelaajaa pisin matka ja eniten kenttiä vierailtu
+        // Haetaan top 5 pelaajaa pisin matka ja eniten kenttiä vierailtu
         const IsoinMatka = [...results].sort((a, b) => 
             b.total_distance - a.total_distance || b.visited_count - a.visited_count
-        ).slice(0, 10);
+        ).slice(0, 5);
         
         // Päivitetään HTML-taulukot
         const EnitenKenttiäBody = document.getElementById('Eniten_kenttiä-body');

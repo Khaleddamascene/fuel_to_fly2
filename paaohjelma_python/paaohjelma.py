@@ -6,13 +6,14 @@ import Visuals
 
 # --- JSON APUFUNKTIO ---
 def paivita_location_json(ident, name, lat, lon, fuel):
+    fuel_int = int(fuel)
     with open("location.json", "w") as f:
         json.dump({
             "lat": lat,
             "lon": lon,
             "ident": ident,
             "name": name,
-            "fuel": fuel
+            "fuel": fuel_int
         }, f)
 
 def reset_location_file():
