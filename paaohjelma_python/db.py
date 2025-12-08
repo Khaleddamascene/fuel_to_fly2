@@ -1,17 +1,11 @@
-# ansenna pip install python-dotenv 
-
 import mysql.connector
-from dotenv import load_dotenv
-import os
-
-load_dotenv()  # Lataa .env-tiedoston
 
 def get_connection():
     return mysql.connector.connect(
-        host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT'),
-        database=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
+        host='127.0.0.1',
+        port=3307,
+        database='fuel_to_fly',
+        user='khaled',
+        password='1234',
         autocommit=True
     )

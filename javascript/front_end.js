@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const playerNameInput = document.getElementById("playerName");
 
     startForm.addEventListener("submit", async (e) => {
-        e.preventDefault(); // estetään lomakkeen oletusarvoinen lähetys
+        e.preventDefault();
 
         const playerName = playerNameInput.value.trim();
 
@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
 
     // Tämä Function hakee tulokset Flask-palvelimelta ja päivittää HTML-taulukot
 

@@ -23,7 +23,6 @@ def luo_pelaaja():
         yhteys = get_connection()
         cursor = yhteys.cursor()
 
-
         cursor.execute(
             "INSERT INTO results (player_name) VALUES (%s)",
             (player_name,)
@@ -36,6 +35,7 @@ def luo_pelaaja():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 # NÄYTÄ Tulokset front endin#
