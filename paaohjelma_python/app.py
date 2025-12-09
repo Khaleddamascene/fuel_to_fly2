@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 import paaohjelma
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)

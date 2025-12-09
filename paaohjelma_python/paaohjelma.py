@@ -3,6 +3,8 @@ import random
 from geopy.distance import geodesic
 import json
 import Visuals
+from dotenv import load_dotenv
+load_dotenv()
 
 # --- JSON APUFUNKTIO ---
 def paivita_location_json(ident, name, lat, lon, fuel):
