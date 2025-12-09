@@ -3,6 +3,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const startForm = document.getElementById("startForm");
     const playerNameInput = document.getElementById("playerName");
+    if (!startForm) return;
 
     startForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -15,12 +16,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            // Lähetetään nimi Flask-palvelimelle
+            // 1) Start the game process (if not already started)
+            const token = localStorage.getItem('START_TOKEN') || null;
+            const startResp = await fetch('http://localhost:5000/api/start_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
+            });
+
+            if (!startResp.ok) {
+                const err = await startResp.json().catch(() => ({}));
+                throw new Error('Palvelin ei sallinut käynnistystä: ' + (err.error || startResp.status));
+            }
+
+            await startResp.json();
+
+            // 2) Insert player into database
             const response = await fetch("http://localhost:5000/api/pelaaja", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ player_name: playerName }),
             });
 
@@ -30,15 +44,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const result = await response.json();
             console.log(result.message);
-
             localStorage.setItem("pelaajan_nimi", playerName);
 
+            // 3) Send the name to the running paaohjelma process
+            const sendResp = await fetch('http://localhost:5000/api/send_name', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ player_name: playerName, start_if_missing: true })
+            });
 
+            if (!sendResp.ok) {
+                const err = await sendResp.json().catch(() => ({}));
+                throw new Error('Nimen lähetys epäonnistui: ' + (err.error || sendResp.status));
+            }
+
+            const sendData = await sendResp.json();
+            console.log('send_name response', sendData);
+
+            // 4) Navigate to game page
             window.location.href = "peli.html";
 
         } catch (error) {
             console.error("Virhe:", error);
-            alert("Virhe pelaajan lisäämisessä. Tarkista palvelin.");
+            alert(error.message || "Virhe pelaajan käsittelyssä. Tarkista palvelin.");
         }
     });
 });
@@ -51,15 +79,15 @@ async function HaeTuloksetFun() {
         const response = await fetch('http://localhost:5000/api/tulokset');
         const results = await response.json();
         
-        // Haetaan top 10 pelaajaa eniten kenttiä vierailtu ja pisin matka
+        // Haetaan top 5 pelaajaa eniten kenttiä vierailtu ja pisin matka
         const EnitenKenttiä = [...results].sort((a, b) => 
             b.visited_count - a.visited_count || b.total_distance - a.total_distance
-        ).slice(0, 10);
+        ).slice(0, 5);
         
-        // Haetaan top 10 pelaajaa pisin matka ja eniten kenttiä vierailtu
+        // Haetaan top 5 pelaajaa pisin matka ja eniten kenttiä vierailtu
         const IsoinMatka = [...results].sort((a, b) => 
             b.total_distance - a.total_distance || b.visited_count - a.visited_count
-        ).slice(0, 10);
+        ).slice(0, 5);
         
         // Päivitetään HTML-taulukot
         const EnitenKenttiäBody = document.getElementById('Eniten_kenttiä-body');
@@ -135,3 +163,44 @@ async function HaePelaajaData() {
 document.addEventListener("DOMContentLoaded", HaePelaajaData);
 
 // _____HaePelaajaData function Loppu _________________________________
+
+// Aloita peli -napin käsittelijä: yritä käynnistää paikallinen peli-palveluprosessi
+document.addEventListener("DOMContentLoaded", () => {
+    const aloitaBtn = document.getElementById('aloita_peli');
+    if (!aloitaBtn) return;
+
+    aloitaBtn.addEventListener('click', async (e) => {
+        // estä oletusnavigointi (nappi on linkin sisällä)
+        e.preventDefault();
+
+        const anchor = aloitaBtn.closest('a');
+
+        try {
+            // Lähetetään pyyntö backendille käynnistää peli
+            const token = localStorage.getItem('START_TOKEN') || null;
+            const resp = await fetch('http://localhost:5000/api/start_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                alert('Palvelin ei sallinut käynnistystä: ' + (err.error || resp.status));
+                return;
+            }
+
+            const data = await resp.json();
+            console.log('start_game response', data);
+
+            // Jos kaikki ok, siirry seuraavalle sivulle (nimen syöttö)
+            if (anchor && anchor.getAttribute('href')) {
+                window.location.href = anchor.getAttribute('href');
+            }
+
+        } catch (error) {
+            console.error('Virhe käynnistäessä peliä:', error);
+            alert('Virhe käynnistäessä peliä. Tarkista palvelin (http://localhost:5000).');
+        }
+    });
+});
