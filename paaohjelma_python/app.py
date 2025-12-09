@@ -8,6 +8,7 @@ import random
 import subprocess
 import sys
 import time
+import paaohjelma
 
 app = Flask(__name__)
 CORS(app)
@@ -82,43 +83,33 @@ def hae_sijainti():
 # ______________________________hae_sijainti loppuu
 
 
-# _______________________________Tässä haetaan tietokanasta 3 lentokenttä jä tehdään route _____________________
-@app.route("/api/get_Valinnat", methods=["GET"])
-def get_Valinnat():
+
+# --- PELI VALINNAT --- #
+@app.route("/api/peli_valinnat", methods=["POST"])
+def peli_valinnat():
     try:
-        yhteys = get_connection()
-        cursor = yhteys.cursor(dictionary=True)
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "JSON-data puuttuu"}), 400
 
-        # Valitaan satunnaisesti 3 lentokenttää tietokannasta
-        cursor.execute("""
-            SELECT a.ident, a.name, a.latitude_deg, a.longitude_deg, 
-                   a.municipality, c.name AS country_name
-            FROM airport a
-            LEFT JOIN country c ON a.iso_country = c.iso_country
-            WHERE a.latitude_deg IS NOT NULL
-              AND a.longitude_deg IS NOT NULL
-            ORDER BY RAND()
-            LIMIT 3
-        """)
+        current_lat = data.get("lat")
+        current_lon = data.get("lon")
+        kayty_kentat = data.get("kayty_kentat", [])
 
-        airports = cursor.fetchall()
-        cursor.close()
-        yhteys.close()
+        if current_lat is None or current_lon is None:
+            return jsonify({"error": "current_lat ja current_lon vaaditaan"}), 400
 
-        response_choices = []
-        for airport in airports:
-            airport_info = airport.copy()
-            airport_info["distance"] = round(random.uniform(100, 5000), 2)
-            response_choices.append(airport_info)
-
-        return jsonify({
-            "choices": response_choices,
-            "current_fuel": 1000,
-            "message": "Valitse seuraava lentokenttä:"
-        })
+        options = paaohjelma.get_peli_valinnat(current_lat, current_lon, kayty_kentat)
+        return jsonify({"choices": options})
 
     except Exception as e:
-        return jsonify({"error": f"Server error: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
+
+# --- Optional GET support for testing --- #
+@app.route("/api/peli_valinnat", methods=["GET"])
+def peli_valinnat_get():
+    return jsonify({"message": "POST JSON-data lat, lon, kayty_kentat"}) 
+
 # _______________________________ def get_Valinnat loppu_____________________
 
 
