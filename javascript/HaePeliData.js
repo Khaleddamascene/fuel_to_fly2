@@ -27,5 +27,6 @@ class PeliDemo {
   
   //   seraavaksi näytetään valintoja frontendissä peli.html tiedostossa
 
-
+    
+ 
 }
