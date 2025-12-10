@@ -19,7 +19,6 @@ app.secret_key = os.urandom(24)
 # Absolute path to the location.json used by the game
 LOCATION_FILE = os.path.join(os.path.dirname(__file__), 'location.json')
 
-
 @app.route("/api/pelaaja", methods=["POST"])
 def luo_pelaaja():
     try:
@@ -85,35 +84,45 @@ def hae_sijainti():
 # ______________________________hae_sijainti loppuu
 
 
+# _______________________________Tässä haetaan pelistä 3 lentokenttä jä tehdään route _____________________
+VALINNAT_FILE = os.path.join(os.path.dirname(__file__), "valinnat.json")
 
-# --- PELI VALINNAT --- #
-@app.route("/api/peli_valinnat", methods=["POST"])
-def peli_valinnat():
+@app.route("/api/get_valinnat", methods=["GET"])
+def get_valinnat():
+    if not os.path.exists(VALINNAT_FILE):
+        return jsonify({"error": "Valintoja ei ole saatavilla"}), 404
+
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "JSON-data puuttuu"}), 400
-
-        current_lat = data.get("lat")
-        current_lon = data.get("lon")
-        kayty_kentat = data.get("kayty_kentat", [])
-
-        if current_lat is None or current_lon is None:
-            return jsonify({"error": "current_lat ja current_lon vaaditaan"}), 400
-
-        options = paaohjelma.get_peli_valinnat(current_lat, current_lon, kayty_kentat)
-        return jsonify({"choices": options})
-
+        with open(VALINNAT_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# --- Optional GET support for testing --- #
-@app.route("/api/peli_valinnat", methods=["GET"])
-def peli_valinnat_get():
-    return jsonify({"message": "POST JSON-data lat, lon, kayty_kentat"}) 
-
 # _______________________________ def get_Valinnat loppu_____________________
 
+
+# ______ Tehän uusi valinta ___________
+@app.route("/api/valitse_kentta", methods=["POST"])
+def valitse_kentta():
+    with open(VALINNAT_FILE, "w") as f: json.dump({"choices": []}, f)
+    data = request.get_json(force=True)
+    index = int(data.get("choice_index", -1))
+
+    if index not in (0, 1, 2):
+        return jsonify({"error": "Virheellinen valinta"}), 400
+
+    syotto = str(index + 1) + "\n"
+
+    proc = app.started_processes.get("paaohjelma")
+    if not proc or proc.poll() is not None or not proc.stdin:
+        return jsonify({"error": "paaohjelma ei käynnissä"}), 409
+
+    proc.stdin.write(syotto.encode("utf-8"))
+    proc.stdin.flush()
+
+    return jsonify({"status": "ok", "sent": syotto.strip()})
+# _______________________________ def valitse_kentta loppu_____________________
 
 # Endpoint to start the game subprocess (e.g. `paaohjelma.py`)
 @app.route("/api/start_game", methods=["POST"])
