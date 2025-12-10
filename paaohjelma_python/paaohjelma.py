@@ -3,6 +3,8 @@ import random
 from geopy.distance import geodesic
 import json
 import Visuals
+from dotenv import load_dotenv
+load_dotenv()
 
 # --- JSON APUFUNKTIOT ---
 def paivita_location_json(ident, name, lat, lon, fuel):
@@ -117,6 +119,56 @@ def alku():
     paivita_location_json(pelaaja_ident, pelaaja_nimi, lat, lon, bensa)
 
     return nimi, kaikki_kentat, (pelaaja_ident, pelaaja_nimi, (lat, lon)), bensa
+
+
+def get_peli_valinnat(current_lat, current_lon, kayty_kentat):
+    yhteys = get_connection()
+    cursor = yhteys.cursor()
+    cursor.execute("""
+        SELECT a.ident,
+               a.name,
+               a.latitude_deg,
+               a.longitude_deg,
+               a.municipality,
+               c.name AS country_name
+        FROM airport a
+        LEFT JOIN country c ON a.iso_country = c.iso_country
+        WHERE a.latitude_deg IS NOT NULL
+          AND a.longitude_deg IS NOT NULL
+    """)
+    kaikki_kentat = cursor.fetchall()
+    cursor.close()
+    yhteys.close()
+
+    kentta_etaisyydet = []
+    for ident, name, lat, lon, municipality, country in kaikki_kentat:
+        if ident in kayty_kentat:
+            continue
+        matka = geodesic((current_lat, current_lon), (lat, lon)).km
+        kentta_etaisyydet.append({
+            "ident": ident,
+            "name": name,
+            "lat": lat,
+            "lon": lon,
+            "municipality": municipality,
+            "country": country,
+            "distance": matka
+        })
+
+    if len(kentta_etaisyydet) < 3:
+        return kentta_etaisyydet  
+
+    
+    kentta_etaisyydet.sort(key=lambda x: x["distance"])
+    jarjestetyt = [kentta_etaisyydet[0],
+                   kentta_etaisyydet[len(kentta_etaisyydet)//2],
+                   kentta_etaisyydet[-1]]
+
+  
+    vaihtoehdot = jarjestetyt.copy()
+    random.shuffle(vaihtoehdot)
+
+    return vaihtoehdot
 
 # --- PELIN PÄÄOSA ---
 def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa, nimi, kokonaismatka):

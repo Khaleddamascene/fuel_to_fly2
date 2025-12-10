@@ -1,11 +1,12 @@
+import os
 import mysql.connector
 
 def get_connection():
     return mysql.connector.connect(
-        host='127.0.0.1',
-        port=3306,
-        database='fuel_to_fly',
-        user='andrei',
-        password='1234',
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT'),
+        database=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
         autocommit=True
     )
