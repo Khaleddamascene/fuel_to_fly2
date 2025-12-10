@@ -67,3 +67,14 @@ body {
 
 
 
+.link-btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+
+.center-text {
+    text-align: center;
+    width: 100%;
+}
