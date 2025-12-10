@@ -4,22 +4,54 @@ from geopy.distance import geodesic
 import json
 import Visuals
 
-# --- JSON APUFUNKTIO ---
+# --- JSON APUFUNKTIOT ---
 def paivita_location_json(ident, name, lat, lon, fuel):
     fuel_int = int(fuel)
-    with open("location.json", "w") as f:
+    with open("location.json", "w", encoding="utf-8") as f:
         json.dump({
             "lat": lat,
             "lon": lon,
             "ident": ident,
             "name": name,
             "fuel": fuel_int
-        }, f)
+        }, f, ensure_ascii=False)
 
 def reset_location_file():
     paivita_location_json(0, "peli ei ole alkanut", 60.1699, 24.9384, 1000)
 
-reset_location_file()
+VALINNAT_FILE = "valinnat.json"
+
+def tallenna_valinnat_json(vaihtoehdot, fuel):
+    data = {"fuel": round(fuel, 0), "choices": []}
+    for ident, name, dist, (lat, lon), municipality, country in vaihtoehdot:
+        data["choices"].append({
+            "ident": ident,
+            "name": name,
+            "distance": round(dist, 1),
+            "latitude": lat,
+            "longitude": lon,
+            "municipality": municipality,
+            "country": country
+        })
+    with open(VALINNAT_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False)
+
+def peli_loppu(nimi=None, kayty_kentat=None, kokonaismatka=None):
+    # Tyhjennetään JSON-tiedostot
+    paivita_location_json(0, "peli päättynyt", 0, 0, 0)
+    with open(VALINNAT_FILE, "w", encoding="utf-8") as f:
+        json.dump({"fuel": 0, "choices": []}, f, ensure_ascii=False)
+    
+    # Tallennetaan tulokset tietokantaan
+    if nimi and kayty_kentat is not None and kokonaismatka is not None:
+        yhteys = get_connection()
+        cursor = yhteys.cursor()
+        sql = "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)"
+        values = (nimi, len(kayty_kentat), kokonaismatka)
+        cursor.execute(sql, values)
+        yhteys.commit()
+        cursor.close()
+        yhteys.close()
 
 # --- KOMENNOT ---
 komennot = [
@@ -27,17 +59,14 @@ komennot = [
     (["ohje", "ohjeet", "o"], "ohje", "Näytä pelin ohjeet")
 ]
 
-# --- OHJEET ---
 def Ohjeet():
     print("\nOhjeet:")
-    print("Sinulle annetaan kolme vaihtoehtoista lentokenttää:")
     print("- Lähin kenttä: turvallisin, saat lisää polttoainetta (+200).")
     print("- Keskikenttä: tasapainoinen valinta, ei lisäpolttoainetta.")
     print("- Kaukaisin kenttä: riski, kuluttaa paljon polttoainetta.")
     print("Jos polttoaine loppuu, peli päättyy.")
     input("Paina ENTER jatkaaksesi...")
 
-# --- KOMENTOKÄSITTELY ---
 def HaeKomento(komento):
     komento = komento.lower().strip()
     for avainsanat, toiminto, kuvaus in komennot:
@@ -63,16 +92,11 @@ def alku():
     cursor = yhteys.cursor()
 
     cursor.execute("""
-        SELECT a.ident,
-               a.name,
-               a.latitude_deg,
-               a.longitude_deg,
-               a.municipality,
-               c.name AS country_name
+        SELECT a.ident, a.name, a.latitude_deg, a.longitude_deg,
+               a.municipality, c.name AS country_name
         FROM airport a
         LEFT JOIN country c ON a.iso_country = c.iso_country
-        WHERE a.latitude_deg IS NOT NULL
-          AND a.longitude_deg IS NOT NULL
+        WHERE a.latitude_deg IS NOT NULL AND a.longitude_deg IS NOT NULL
     """)
     kaikki_kentat = cursor.fetchall()
 
@@ -84,8 +108,7 @@ def alku():
     pelaaja_ident, pelaaja_nimi, lat, lon, municipality, country_name = aloitus
     bensa = 1000.0
 
-    print(f"\nTervetuloa peliin, {nimi}!")
-    print(f"Aloitat kentältä: {pelaaja_nimi} ({pelaaja_ident})")
+    print(f"\nTervetuloa peliin, {nimi}! Aloitat kentältä: {pelaaja_nimi} ({pelaaja_ident})")
     print(f"Polttoainetta käytössäsi: {bensa:.0f} yksikköä.\n")
 
     cursor.close()
@@ -96,7 +119,7 @@ def alku():
     return nimi, kaikki_kentat, (pelaaja_ident, pelaaja_nimi, (lat, lon)), bensa
 
 # --- PELIN PÄÄOSA ---
-def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
+def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa, nimi, kokonaismatka):
     pelaaja_ident, pelaaja_kentta_nimi, pelaaja_sijainti = pelaaja_kentta
     print(f"\nNykyinen kenttä: {pelaaja_kentta_nimi} ({pelaaja_ident})")
 
@@ -109,7 +132,8 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
     if len(kentta_etaisyydet) < 3:
         print("Ei enää uusia kenttiä — peli päättyy!")
-        return pelaaja_kentta, bensa, 0
+        peli_loppu(nimi, kayty_kentat, kokonaismatka)
+        return None, 0, 0
 
     kentta_etaisyydet.sort(key=lambda x: x[2])
     lahin, keskimmainen, kaukaisin = kentta_etaisyydet[0], kentta_etaisyydet[len(kentta_etaisyydet)//2], kentta_etaisyydet[-1]
@@ -118,6 +142,8 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
     vaihtoehdot = jarjestetyt.copy()
     random.shuffle(vaihtoehdot)
 
+    tallenna_valinnat_json(vaihtoehdot, bensa)
+
     print("Vaihtoehtoiset lentokentät:")
     for i, (ident, name, dist, sijainti, municipality, country) in enumerate(vaihtoehdot, start=1):
         print(f"{i}. Kaupunki: {municipality}")
@@ -125,7 +151,6 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
         print(f"   Lentokenttä: {name}")
         print(f"   Maa: {country}\n")
 
-    # Valinta
     while True:
         s = input("\nValitse kenttä (1–3): ").strip()
         if HaeKomento(s):
@@ -143,11 +168,10 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
     if bensa < matka:
         print(f"Polttoaine ei riitä lennolle ({matka:.1f} km). Peli päättyy.")
-        reset_location_file()
-        return pelaaja_kentta, 0, 0
+        peli_loppu(nimi, kayty_kentat, kokonaismatka)
+        return None, 0, 0
 
     bensa -= matka
-
     if valittu == jarjestetyt[0]:
         print("Turvallinen valinta! Saat lisää polttoainetta (+200).")
         bensa += 200
@@ -165,13 +189,12 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
 # --- MAIN ---
 if __name__ == "__main__":
-
     Visuals.logo()
     peliJatkuu = True
+
     while peliJatkuu:
         print("=== Fuel to Fly ===\n")
         input("Paina ENTER aloittaaksesi!\n")
-
         print("Kirjoita 'ohje' saadaksesi pelin ohjeet.\n")
         Puhe()
 
@@ -180,45 +203,15 @@ if __name__ == "__main__":
         kokonaismatka = 0
 
         while bensa > 0:
-            kentta, bensa, matka = pelaa_peli(kentta, kaikki_kentat, kayty_kentat, bensa)
-            if bensa > 0:
-                kayty_kentat.append(kentta[0])
-                kokonaismatka += matka
-
-        while True:
-            uusiksi = input("Haluatko jatkaa? (Kyllä/Ei) ").lower().strip()
-            if uusiksi in ("kyllä", "k"):
-                break
-            elif uusiksi in ("ei", "e"):
+            kentta, bensa, matka = pelaa_peli(kentta, kaikki_kentat, kayty_kentat, bensa, nimi, kokonaismatka)
+            if kentta is None:
+                # Peli loppui automaattisesti
                 peliJatkuu = False
                 break
+            kayty_kentat.append(kentta[0])
+            kokonaismatka += matka
 
-        # Tallennetaan tulokset tietokantaan
-        yhteys = get_connection()
-        cursor = yhteys.cursor()
-
-        sql = "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)"
-        values = (nimi, len(kayty_kentat), kokonaismatka)
-        cursor.execute(sql, values)
-        yhteys.commit()
-
-        print(f"\nSinä {nimi} vierailit {len(kayty_kentat)} kentässä ja lensit yhteensä {kokonaismatka:.2f} km\n")
-
-        # Paras tulos kenttien mukaan
-        cursor.execute(
-            "SELECT player_name, visited_count, total_distance FROM results ORDER BY visited_count DESC, total_distance DESC LIMIT 1")
-        best_by_airports = cursor.fetchone()
-        if best_by_airports and best_by_airports[0] == nimi:
-            print("! Congratulations New Record! Vierailit eniten lentokenttiä")
-        print(f"Eniten kenttiä: {best_by_airports[0]} vieraili {best_by_airports[1]} kentässä ja lensi {best_by_airports[2]:.2f} km\n")
-
-        # Paras matkan pituuden mukaan
-        cursor.execute(
-            "SELECT player_name, visited_count, total_distance FROM results ORDER BY total_distance DESC, visited_count DESC LIMIT 1")
-        best_by_distance = cursor.fetchone()
-        if best_by_distance and best_by_distance[0] == nimi:
-            print("! Congratulations New Record! Lensit pisimmän matkan")
-        print(f"Isoin matka: {best_by_distance[0]} vieraili {best_by_distance[1]} kentässä ja lensi {best_by_distance[2]:.2f} km\n")
-
-        cursor.close()
-        yhteys.close()
+        # Tallennetaan lopulliset tulokset tietokantaan, jos peli päättyi kesken
+        peli_loppu(nimi, kayty_kentat, kokonaismatka)
+        print("Peli päättyi. Kiitos pelaamisesta!")
+        break

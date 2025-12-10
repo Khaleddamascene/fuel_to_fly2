@@ -16,7 +16,6 @@ app.secret_key = os.urandom(24)
 # Absolute path to the location.json used by the game
 LOCATION_FILE = os.path.join(os.path.dirname(__file__), 'location.json')
 
-
 @app.route("/api/pelaaja", methods=["POST"])
 def luo_pelaaja():
     try:
@@ -82,45 +81,45 @@ def hae_sijainti():
 # ______________________________hae_sijainti loppuu
 
 
-# _______________________________Tässä haetaan tietokanasta 3 lentokenttä jä tehdään route _____________________
-@app.route("/api/get_Valinnat", methods=["GET"])
-def get_Valinnat():
+# _______________________________Tässä haetaan pelistä 3 lentokenttä jä tehdään route _____________________
+VALINNAT_FILE = os.path.join(os.path.dirname(__file__), "valinnat.json")
+
+@app.route("/api/get_valinnat", methods=["GET"])
+def get_valinnat():
+    if not os.path.exists(VALINNAT_FILE):
+        return jsonify({"error": "Valintoja ei ole saatavilla"}), 404
+
     try:
-        yhteys = get_connection()
-        cursor = yhteys.cursor(dictionary=True)
-
-        # Valitaan satunnaisesti 3 lentokenttää tietokannasta
-        cursor.execute("""
-            SELECT a.ident, a.name, a.latitude_deg, a.longitude_deg, 
-                   a.municipality, c.name AS country_name
-            FROM airport a
-            LEFT JOIN country c ON a.iso_country = c.iso_country
-            WHERE a.latitude_deg IS NOT NULL
-              AND a.longitude_deg IS NOT NULL
-            ORDER BY RAND()
-            LIMIT 3
-        """)
-
-        airports = cursor.fetchall()
-        cursor.close()
-        yhteys.close()
-
-        response_choices = []
-        for airport in airports:
-            airport_info = airport.copy()
-            airport_info["distance"] = round(random.uniform(100, 5000), 2)
-            response_choices.append(airport_info)
-
-        return jsonify({
-            "choices": response_choices,
-            "current_fuel": 1000,
-            "message": "Valitse seuraava lentokenttä:"
-        })
-
+        with open(VALINNAT_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify(data)
     except Exception as e:
-        return jsonify({"error": f"Server error: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
+
 # _______________________________ def get_Valinnat loppu_____________________
 
+
+# ______ Tehän uusi valinta ___________
+@app.route("/api/valitse_kentta", methods=["POST"])
+def valitse_kentta():
+    with open(VALINNAT_FILE, "w") as f: json.dump({"choices": []}, f)
+    data = request.get_json(force=True)
+    index = int(data.get("choice_index", -1))
+
+    if index not in (0, 1, 2):
+        return jsonify({"error": "Virheellinen valinta"}), 400
+
+    syotto = str(index + 1) + "\n"
+
+    proc = app.started_processes.get("paaohjelma")
+    if not proc or proc.poll() is not None or not proc.stdin:
+        return jsonify({"error": "paaohjelma ei käynnissä"}), 409
+
+    proc.stdin.write(syotto.encode("utf-8"))
+    proc.stdin.flush()
+
+    return jsonify({"status": "ok", "sent": syotto.strip()})
+# _______________________________ def valitse_kentta loppu_____________________
 
 # Endpoint to start the game subprocess (e.g. `paaohjelma.py`)
 @app.route("/api/start_game", methods=["POST"])
