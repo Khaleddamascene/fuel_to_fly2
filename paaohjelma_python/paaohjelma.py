@@ -82,7 +82,7 @@ komennot = [
 
 def Ohjeet():
     print("\nOhjeet:")
-    print("- Lähin kenttä: turvallisin, saat lisää polttoainetta (+200).")
+    print("- Lähin kenttä: turvallisin, saat lisää polttoainetta (+1000).")
     print("- Keskikenttä: tasapainoinen valinta, ei lisäpolttoainetta.")
     print("- Kaukaisin kenttä: riski, kuluttaa paljon polttoainetta.")
     print("Jos polttoaine loppuu, peli päättyy.")
@@ -244,10 +244,11 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa, nimi, kokonai
 
     bensa -= matka
     if valittu == jarjestetyt[0]:
-        print("Turvallinen valinta! Saat lisää polttoainetta (+200).")
-        bensa += 200
+        print("Turvallinen valinta! Saat lisää polttoainetta (+1000).")
+        bensa += 1000
     elif valittu == jarjestetyt[1]:
-        print("Keskipitkä lento onnistui hyvin.")
+        print("Keskipitkä lento onnistui hyvin.  (+1000)")
+        bensa += 1000
     else:
         print("Kaukaisin kenttä! Kulutit paljon polttoainetta.")
 
