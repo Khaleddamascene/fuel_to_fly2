@@ -139,7 +139,7 @@ def alku():
 
     return nimi, kaikki_kentat, (pelaaja_ident, pelaaja_nimi, (lat, lon)), bensa
 
-# 
+
 def get_peli_valinnat(current_lat, current_lon, kayty_kentat):
     yhteys = get_connection()
     cursor = yhteys.cursor()
