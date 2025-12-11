@@ -44,16 +44,35 @@ def peli_loppu(nimi=None, kayty_kentat=None, kokonaismatka=None):
     with open(VALINNAT_FILE, "w", encoding="utf-8") as f:
         json.dump({"fuel": 0, "choices": []}, f, ensure_ascii=False)
     
-    # Tallennetaan tulokset tietokantaan
+    # Tallennetaan tulokset
     if nimi and kayty_kentat is not None and kokonaismatka is not None:
         yhteys = get_connection()
         cursor = yhteys.cursor()
-        sql = "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)"
-        values = (nimi, len(kayty_kentat), kokonaismatka)
-        cursor.execute(sql, values)
+
+        # Tarkistetaan, onko pelaaja jo olemassa
+        cursor.execute(
+            "SELECT id FROM results WHERE player_name = %s",
+            (nimi,)
+        )
+        row = cursor.fetchone()
+
+        if row:
+            # Pelaaja löytyy → päivitetään olemassa oleva rivi
+            cursor.execute(
+                "UPDATE results SET visited_count = %s, total_distance = %s WHERE player_name = %s",
+                (len(kayty_kentat), kokonaismatka, nimi)
+            )
+        else:
+            # Pelaajaa ei ole → lisätään uusi rivi
+            cursor.execute(
+                "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)",
+                (nimi, len(kayty_kentat), kokonaismatka)
+            )
+
         yhteys.commit()
         cursor.close()
         yhteys.close()
+
 
 # --- KOMENNOT ---
 komennot = [
@@ -63,7 +82,7 @@ komennot = [
 
 def Ohjeet():
     print("\nOhjeet:")
-    print("- Lähin kenttä: turvallisin, saat lisää polttoainetta (+200).")
+    print("- Lähin kenttä: turvallisin, saat lisää polttoainetta (+1000).")
     print("- Keskikenttä: tasapainoinen valinta, ei lisäpolttoainetta.")
     print("- Kaukaisin kenttä: riski, kuluttaa paljon polttoainetta.")
     print("Jos polttoaine loppuu, peli päättyy.")
@@ -225,10 +244,11 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa, nimi, kokonai
 
     bensa -= matka
     if valittu == jarjestetyt[0]:
-        print("Turvallinen valinta! Saat lisää polttoainetta (+200).")
-        bensa += 200
+        print("Turvallinen valinta! Saat lisää polttoainetta (+1000).")
+        bensa += 1000
     elif valittu == jarjestetyt[1]:
-        print("Keskipitkä lento onnistui hyvin.")
+        print("Keskipitkä lento onnistui hyvin.  (+1000)")
+        bensa += 1000
     else:
         print("Kaukaisin kenttä! Kulutit paljon polttoainetta.")
 
