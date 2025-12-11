@@ -54,14 +54,29 @@ body {
 
 .btn {
     width: 100%;
-    padding: 14px;
-    font-size: 16px;
+    padding: 10px;
+    font-size: 18px;
     border: none;
-    border-radius: 6px;
+    font-weight: bold;
+    border-radius: 5px;
+    background-color: #1935CA;
+    border: 2px solid #1935CA;
+    color: white;
     cursor: pointer;
-    color: #fff;
-    background: #2446dc;
-    transition: 0.2s ease;
+}
+
+.btn2 {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+    font-weight: bold;
+    border-radius:  5px;
+    cursor: pointer;
+    text-align: center;
+    color: #1935CA;
+    border: 2px solid #1935CA;
+    background-color: #fff;
 }
 
 

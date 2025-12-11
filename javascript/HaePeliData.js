@@ -72,6 +72,7 @@ function valitseKentta(kentta) {
     käyty: window.kaytyKentat
   });
 
+
   haePeliValinnat();
 }
 

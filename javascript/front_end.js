@@ -145,7 +145,6 @@ async function HaePelaajaData() {
                 document.getElementById("pelaajan_nimi").textContent = viimeinenPelaaja.player_name || "-";
                 document.getElementById("vierailtuja_kenttia").textContent = viimeinenPelaaja.visited_count || "-";
                 document.getElementById("kokonaismatka").textContent = (viimeinenPelaaja.total_distance || 0) + " km";
-                document.getElementById("kaytetty_bensa").textContent = viimeinenPelaaja.fuel_used || "-";
 
         } else {
             console.error("Ei pelaajia listassa.");
@@ -156,7 +155,6 @@ async function HaePelaajaData() {
         document.getElementById("pelaajan_nimi").textContent = "Ei dataa";
         document.getElementById("vierailtuja_kenttia").textContent = "-";
         document.getElementById("kokonaismatka").textContent = "- km";
-        document.getElementById("kaytetty_bensa").textContent = "-";
     }
 }
 
