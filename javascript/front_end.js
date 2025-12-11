@@ -162,6 +162,28 @@ document.addEventListener("DOMContentLoaded", HaePelaajaData);
 
 // _____HaePelaajaData function Loppu _________________________________
 
+
+async function HaeKuolemaData() { // Kenttien määrä, matka, ja viimeisin lentokenttä (ja minne oli matka)
+    try {
+        const response = await fetch("http://localhost:5000/api/havio");
+        const data = await response.json();
+
+        const viimeinenPelaaja = data[data.length - 1];
+        document.getElementById("nykyinen_kentta").textContent = nykyinen_kentta || "Kuusta?";
+        document.getElementById("kenttien_maara").textContent = viimeinenPelaaja.visited_count || "Et ole vielä käynyt missään.";
+        document.getElementById("kokonaismatka").textContent = (viimeinenPelaaja.total_distance || 0) + " km";
+
+    } catch (error) {
+        console.error("Virhe datan haussa: HaeKuolemaData", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", HaeKuolemaData);
+
+// _____HaeKuolemaData function Loppu _________________________________
+
+
+
 // Aloita peli -napin käsittelijä: yritä käynnistää paikallinen peli-palveluprosessi
 document.addEventListener("DOMContentLoaded", () => {
     const aloitaBtn = document.getElementById('aloita_peli');

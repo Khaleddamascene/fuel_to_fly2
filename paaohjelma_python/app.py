@@ -67,6 +67,17 @@ def pelaaja_data(pelaaja_id):
     yhteys.close()
     return jsonify(tulokset)
 
+# Polttoaine loppui. 
+@app.route("/api/havio")
+def havio_data():
+    yhteys = get_connection()
+    cursor = yhteys.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM results")
+    tulokset = cursor.fetchall()
+    cursor.close()
+    yhteys.close()
+    return jsonify(tulokset)
+
 
 # LÄHETÄ Kartan tietoja front endin#
 @app.route("/api/location")
