@@ -15,7 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.secret_key = os.urandom(24)
-
+# 
 # Absolute path to the location.json used by the game
 LOCATION_FILE = os.path.join(os.path.dirname(__file__), 'location.json')
 
