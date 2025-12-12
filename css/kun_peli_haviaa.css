@@ -20,7 +20,6 @@ body {
     -webkit-font-smoothing:antialiased;
 }
 
-/* Ylätunniste */
 .ylatunniste {
     padding: 18px 24px;
 }
@@ -33,7 +32,6 @@ body {
     height: 36px;
 }
 
-/* Keskitetty iso kortti koko sivun keskelle leveydeltään */
 .sivu_kortti {
     width: 100%;
     display: flex;

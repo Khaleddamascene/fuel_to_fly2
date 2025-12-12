@@ -15,7 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.secret_key = os.urandom(24)
-# 
+
 # Absolute path to the location.json used by the game
 LOCATION_FILE = os.path.join(os.path.dirname(__file__), 'location.json')
 
@@ -59,6 +59,17 @@ def hae_tulokset():
 
 @app.route("/api/pelaaja/<int:pelaaja_id>")
 def pelaaja_data(pelaaja_id):
+    yhteys = get_connection()
+    cursor = yhteys.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM results")
+    tulokset = cursor.fetchall()
+    cursor.close()
+    yhteys.close()
+    return jsonify(tulokset)
+
+# Polttoaine loppui. 
+@app.route("/api/havio")
+def havio_data():
     yhteys = get_connection()
     cursor = yhteys.cursor(dictionary=True)
     cursor.execute("SELECT * FROM results")
