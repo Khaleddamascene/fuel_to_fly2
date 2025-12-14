@@ -41,17 +41,14 @@ def tallenna_valinnat_json(vaihtoehdot, fuel):
         json.dump(data, f, ensure_ascii=False)
 
 def peli_loppu(nimi=None, kayty_kentat=None, kokonaismatka=None):
-    # Tyhjennetään JSON-tiedostot
     paivita_location_json(0, "peli päättynyt", 0, 0, 0)
     with open(VALINNAT_FILE, "w", encoding="utf-8") as f:
         json.dump({"fuel": 0, "choices": []}, f, ensure_ascii=False)
-    
-    # Tallennetaan tulokset
+
     if nimi and kayty_kentat is not None and kokonaismatka is not None:
         yhteys = get_connection()
         cursor = yhteys.cursor()
 
-        # Tarkistetaan, onko pelaaja jo olemassa
         cursor.execute(
             "SELECT id FROM results WHERE player_name = %s",
             (nimi,)
@@ -59,13 +56,11 @@ def peli_loppu(nimi=None, kayty_kentat=None, kokonaismatka=None):
         row = cursor.fetchone()
 
         if row:
-            # Pelaaja löytyy → päivitetään olemassa oleva rivi
             cursor.execute(
                 "UPDATE results SET visited_count = %s, total_distance = %s WHERE player_name = %s",
                 (len(kayty_kentat), kokonaismatka, nimi)
             )
         else:
-            # Pelaajaa ei ole → lisätään uusi rivi
             cursor.execute(
                 "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)",
                 (nimi, len(kayty_kentat), kokonaismatka)
@@ -156,7 +151,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
     if len(kentat) < 3:
         print("Ei enää uusia kenttiä. Peli päättyy.")
-        return None, 0
+        return None, 0, 0
 
     kentat.sort(key=lambda x: x[6])
 
@@ -167,7 +162,6 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
     vaihtoehdot = [lahin, keskimmainen, kaukaisin]
     random.shuffle(vaihtoehdot)
 
-    # JSON (ei etäisyyttä)
     tallenna_valinnat_json(
         [(k[0], k[1], k[2], k[3], k[4], k[5]) for k in vaihtoehdot],
         bensa
@@ -194,7 +188,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
     if bensa < kulutus:
         print("Polttoaine ei riitä.")
         peli_loppu(nimi, kayty_kentat, kokonaismatka=0)
-        return None, 0
+        return None, 0, 0
 
     bensa -= kulutus
 
@@ -212,7 +206,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
         bensa
     )
 
-    return (valittu[0], valittu[1], valittu[2]), bensa
+    return (valittu[0], valittu[1], valittu[2]), bensa, kulutus
 
 # ===============================
 # MAIN
@@ -226,12 +220,14 @@ if __name__ == "__main__":
 
     nimi, kaikki_kentat, kentta, bensa = alku()
     kayty_kentat = [kentta[0]]
+    kokonaismatka = 0.0
 
     while bensa > 0:
-        kentta, bensa = pelaa_peli(kentta, kaikki_kentat, kayty_kentat, bensa)
+        kentta, bensa, matka = pelaa_peli(kentta, kaikki_kentat, kayty_kentat, bensa)
         if kentta is None:
             break
+        kokonaismatka += matka
         kayty_kentat.append(kentta[0])
 
-    peli_loppu(nimi, kayty_kentat, kokonaismatka=0)
+    peli_loppu(nimi, kayty_kentat, kokonaismatka)
     print("\nPeli päättyi. Kiitos pelaamisesta!")
