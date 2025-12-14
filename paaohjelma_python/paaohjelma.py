@@ -40,6 +40,41 @@ def tallenna_valinnat_json(vaihtoehdot, fuel):
     with open(VALINNAT_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
 
+def peli_loppu(nimi=None, kayty_kentat=None, kokonaismatka=None):
+    # Tyhjennetään JSON-tiedostot
+    paivita_location_json(0, "peli päättynyt", 0, 0, 0)
+    with open(VALINNAT_FILE, "w", encoding="utf-8") as f:
+        json.dump({"fuel": 0, "choices": []}, f, ensure_ascii=False)
+    
+    # Tallennetaan tulokset
+    if nimi and kayty_kentat is not None and kokonaismatka is not None:
+        yhteys = get_connection()
+        cursor = yhteys.cursor()
+
+        # Tarkistetaan, onko pelaaja jo olemassa
+        cursor.execute(
+            "SELECT id FROM results WHERE player_name = %s",
+            (nimi,)
+        )
+        row = cursor.fetchone()
+
+        if row:
+            # Pelaaja löytyy → päivitetään olemassa oleva rivi
+            cursor.execute(
+                "UPDATE results SET visited_count = %s, total_distance = %s WHERE player_name = %s",
+                (len(kayty_kentat), kokonaismatka, nimi)
+            )
+        else:
+            # Pelaajaa ei ole → lisätään uusi rivi
+            cursor.execute(
+                "INSERT INTO results (player_name, visited_count, total_distance) VALUES (%s, %s, %s)",
+                (nimi, len(kayty_kentat), kokonaismatka)
+            )
+
+        yhteys.commit()
+        cursor.close()
+        yhteys.close()
+
 # ===============================
 # KOMENNOT
 # ===============================
@@ -158,6 +193,7 @@ def pelaa_peli(pelaaja_kentta, kaikki_kentat, kayty_kentat, bensa):
 
     if bensa < kulutus:
         print("Polttoaine ei riitä.")
+        peli_loppu(nimi, kayty_kentat, kokonaismatka=0)
         return None, 0
 
     bensa -= kulutus
@@ -197,4 +233,5 @@ if __name__ == "__main__":
             break
         kayty_kentat.append(kentta[0])
 
+    peli_loppu(nimi, kayty_kentat, kokonaismatka=0)
     print("\nPeli päättyi. Kiitos pelaamisesta!")
